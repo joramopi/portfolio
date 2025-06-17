@@ -1,6 +1,8 @@
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
+  const { user } = useAuth();
   const linkClass = ({ isActive }) =>
     `px-3 py-2 rounded hover:bg-gray-100 ${isActive ? 'bg-gray-200 font-semibold' : ''}`;
 
@@ -22,6 +24,11 @@ export default function Navbar() {
         <NavLink to="/proyectos" className={linkClass}>
           Proyectos
         </NavLink>
+        {user && (user.role === 'admin' || user.role === 'editor') && (
+          <NavLink to="/cms-publicaciones" className={linkClass}>
+            CMS
+          </NavLink>
+        )}
         <NavLink to="/galeria" className={linkClass}>
           Galería
         </NavLink>
