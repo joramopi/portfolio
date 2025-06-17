@@ -1,9 +1,11 @@
 const express = require('express');
-const { getMe } = require('../controllers/authController');
+const { register, login, getMe } = require('../controllers/authController');
 const { verifyToken, isAdmin } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
+router.post('/register', register);
+router.post('/login', login);
 router.get('/me', verifyToken, getMe);
 
 // Ejemplo ruta para admin:
