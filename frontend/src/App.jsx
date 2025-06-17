@@ -9,6 +9,7 @@ import Proyectos from './pages/Proyectos';
 import Galeria from './pages/Galeria';
 import Contacto from './pages/Contacto';
 import Login from './pages/Login';
+import CMSPublicaciones from './pages/CMSPublicaciones';
 
 export default function App() {
   return (
@@ -20,8 +21,11 @@ export default function App() {
           <Route path="sobre-mi" element={<SobreMi />} />
           <Route path="cv" element={<CV />} />
           <Route path="publicaciones" element={<Publicaciones />} />
-          <Route element={<PrivateRoute />}> 
+          <Route element={<PrivateRoute />}>
             <Route path="proyectos" element={<Proyectos />} />
+          </Route>
+          <Route element={<PrivateRoute roles={['admin','editor']} />}>
+            <Route path="cms-publicaciones" element={<CMSPublicaciones />} />
           </Route>
           <Route path="galeria" element={<Galeria />} />
           <Route path="contacto" element={<Contacto />} />
