@@ -3,43 +3,30 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const { Sequelize } = require('sequelize');
-const authRoutes = require('./routes/authRoutes'); // Asegúrate de crear esto después
+const sequelize = require('./config/db'); // <-- nuevo import
+const authRoutes = require('./routes/authRoutes');
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/api', authRoutes);
 
-// Base de datos SQLite con Sequelize
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: './database.sqlite'
-});
-
-// Probar conexión a la base de datos y sincronizar modelos
+// Conectar DB y arrancar servidor
 sequelize.authenticate()
   .then(() => {
-    console.log('✅ Conectado a la base de datos SQLite');
-    return sequelize.sync();
+    console.log('✅ Conectado a SQLite');
+    return sequelize.sync(); // sincroniza todos los modelos
   })
   .then(() => {
     console.log('📦 Modelos sincronizados');
+    app.listen(PORT, () => {
+      console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+    });
   })
-  .catch(err => {
-    console.error('❌ Error al conectar a SQLite:', err);
+  .catch((err) => {
+    console.error('❌ Error al conectar a la base de datos:', err.message);
   });
-
-// Rutas
-app.use('/api', authRoutes);
-
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-});
-
-module.exports = { sequelize }; // Para que otros archivos puedan usar la conexión

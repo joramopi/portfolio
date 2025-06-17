@@ -1,28 +1,26 @@
+// backend/models/User.js
+
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../index');
+const sequelize = require('../config/db'); // <-- ¡aquí está el cambio!
 
 const User = sequelize.define('User', {
   name: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: false
   },
   email: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
+    unique: true
   },
   password: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: false
   },
   role: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    defaultValue: 'editor',
-    validate: {
-      isIn: [['admin', 'editor']],
-    },
-  },
+    type: DataTypes.ENUM('admin', 'editor'),
+    defaultValue: 'editor'
+  }
 });
 
 module.exports = User;

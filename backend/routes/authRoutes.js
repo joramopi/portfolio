@@ -1,10 +1,14 @@
 const express = require('express');
-const router = express.Router();
-const authController = require('../controllers/authController');
-const { verifyToken } = require('../middleware/authMiddleware');
+const { getMe } = require('../controllers/authController');
+const { verifyToken, isAdmin } = require('../middleware/authMiddleware');
 
-router.post('/register', authController.register);
-router.post('/login', authController.login);
-router.get('/me', verifyToken, authController.getMe);
+const router = express.Router();
+
+router.get('/me', verifyToken, getMe);
+
+// Ejemplo ruta para admin:
+router.post('/admin/crear-usuario', verifyToken, isAdmin, (req, res) => {
+  // lógica aquí
+});
 
 module.exports = router;
