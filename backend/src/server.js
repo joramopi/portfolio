@@ -15,7 +15,7 @@ app.get('/api', (req, res) => {
   res.json({ message: 'Welcome to the portfolio API' });
 });
 
-app.use('/api/auth', require('./routes/auth'));
+app.use('/api', require('../routes/authRoutes'));
 app.use('/api/sections', require('./routes/sections'));
 
 const PORT = process.env.PORT || 3001;
