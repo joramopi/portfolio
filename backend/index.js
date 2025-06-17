@@ -21,10 +21,14 @@ const sequelize = new Sequelize({
   storage: './database.sqlite'
 });
 
-// Probar conexión a la base de datos
+// Probar conexión a la base de datos y sincronizar modelos
 sequelize.authenticate()
   .then(() => {
     console.log('✅ Conectado a la base de datos SQLite');
+    return sequelize.sync();
+  })
+  .then(() => {
+    console.log('📦 Modelos sincronizados');
   })
   .catch(err => {
     console.error('❌ Error al conectar a SQLite:', err);
