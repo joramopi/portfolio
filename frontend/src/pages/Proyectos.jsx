@@ -7,13 +7,15 @@ export default function Proyectos() {
   return (
     <section className="p-4 space-y-4">
       <h1 className="text-2xl font-bold">Proyectos</h1>
-      {proyectos.map((p) => (
-        <div key={p.titulo} className="border p-4 rounded shadow-sm">
-          <h2 className="font-semibold">{p.titulo}</h2>
-          <p className="text-sm text-gray-600">{p.objetivo}</p>
-          <p className="text-sm">{p.resultado}</p>
-        </div>
-      ))}
+      <div className="grid gap-4 md:grid-cols-2">
+        {proyectos.map((p) => (
+          <div key={p.titulo} className="border p-4 rounded shadow-sm">
+            <h2 className="font-semibold text-lg">{p.titulo}</h2>
+            <p className="text-sm text-gray-600">{p.objetivo}</p>
+            <p className="text-sm">{p.resultado}</p>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
