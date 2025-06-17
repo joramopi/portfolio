@@ -5,12 +5,12 @@ export default function Header() {
     <header className="bg-gray-200 p-4">
       <nav className="flex flex-wrap gap-4 justify-center">
         <Link to="/">Inicio</Link>
-        <Link to="/about">Sobre mí</Link>
+        <Link to="/sobre-mi">Sobre mí</Link>
         <Link to="/cv">CV</Link>
-        <Link to="/publications">Publicaciones</Link>
-        <Link to="/projects">Proyectos</Link>
-        <Link to="/gallery">Galería</Link>
-        <Link to="/contact">Contacto</Link>
+        <Link to="/publicaciones">Publicaciones</Link>
+        <Link to="/proyectos">Proyectos</Link>
+        <Link to="/galeria">Galería</Link>
+        <Link to="/contacto">Contacto</Link>
       </nav>
     </header>
   );
