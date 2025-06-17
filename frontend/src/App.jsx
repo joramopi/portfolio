@@ -1,25 +1,26 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
+import Layout from './components/Layout';
 import Home from './pages/Home';
-import About from './pages/About';
+import SobreMi from './pages/SobreMi';
 import CV from './pages/CV';
-import Publications from './pages/Publications';
-import Projects from './pages/Projects';
-import Gallery from './pages/Gallery';
-import Contact from './pages/Contact';
+import Publicaciones from './pages/Publicaciones';
+import Proyectos from './pages/Proyectos';
+import Galeria from './pages/Galeria';
+import Contacto from './pages/Contacto';
 
 export default function App() {
   return (
     <Router>
-      <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/cv" element={<CV />} />
-        <Route path="/publications" element={<Publications />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/gallery" element={<Gallery />} />
-        <Route path="/contact" element={<Contact />} />
+        <Route path="/" element={<Layout />}> 
+          <Route index element={<Home />} />
+          <Route path="sobre-mi" element={<SobreMi />} />
+          <Route path="cv" element={<CV />} />
+          <Route path="publicaciones" element={<Publicaciones />} />
+          <Route path="proyectos" element={<Proyectos />} />
+          <Route path="galeria" element={<Galeria />} />
+          <Route path="contacto" element={<Contacto />} />
+        </Route>
       </Routes>
     </Router>
   );
