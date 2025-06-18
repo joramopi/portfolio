@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 
+const { verifyToken, isAdminOrEditor } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -17,7 +18,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.post('/upload', upload.single('image'), (req, res) => {
+router.post('/upload', verifyToken, isAdminOrEditor, upload.single('image'), (req, res) => {
   const filePath = `/uploads/${req.file.filename}`;
   const url = `${req.protocol}://${req.get('host')}${filePath}`;
   res.json({ url });

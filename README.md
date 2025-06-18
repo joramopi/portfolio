@@ -25,7 +25,7 @@ A continuación se describen los pasos de instalación, las variables de entorno
    ```bash
    npm install
    ```
-3. Crea un archivo `.env` (puedes usar `backend/.env` como ejemplo) y define las variables descritas más abajo.
+3. Crea un archivo `.env` (puedes usar `backend/.env.example` como referencia) y define las variables descritas más abajo.
 
 ### Frontend
 
@@ -48,7 +48,7 @@ Las siguientes variables se leen desde el archivo `.env` en el directorio `backe
 
 - `PORT` – Puerto en el que se iniciará el servidor. Por defecto `3000`.
 - `JWT_SECRET` – Clave secreta para firmar los tokens JWT.
-- `MONGO_URI` – URL de conexión a la base de datos MongoDB. Si no se define se usa `mongodb://localhost:27017/portfolio`.
+- `DB_FILE` – Ruta al archivo SQLite. Por defecto `./database.sqlite`.
 
 ### Frontend
 
