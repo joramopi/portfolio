@@ -52,7 +52,13 @@ Las siguientes variables se leen desde el archivo `.env` en el directorio `backe
 
 ### Frontend
 
-La aplicación frontend no requiere variables de entorno adicionales por defecto.
+El archivo `frontend/.env` define la variable `VITE_API_URL`, que indica la URL
+base para las peticiones al API. Por defecto debe apuntar al backend en
+desarrollo:
+
+```env
+VITE_API_URL=http://localhost:3000/api
+```
 
 ## Ejecución en modo desarrollo
 
