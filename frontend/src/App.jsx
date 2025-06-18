@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import ErrorBoundary from './components/ErrorBoundary';
 import Layout from './components/Layout';
 import PrivateRoute from './components/PrivateRoute';
 import Home from './pages/Home';
@@ -13,8 +14,9 @@ import CMSPublicaciones from './pages/CMSPublicaciones';
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
+    <ErrorBoundary>
+      <Router>
+        <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
@@ -30,7 +32,8 @@ export default function App() {
           <Route path="galeria" element={<Galeria />} />
           <Route path="contacto" element={<Contacto />} />
         </Route>
-      </Routes>
-    </Router>
+        </Routes>
+      </Router>
+    </ErrorBoundary>
   );
 }
