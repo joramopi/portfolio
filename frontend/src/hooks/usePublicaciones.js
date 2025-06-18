@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import axios from 'axios';
 
 export default function usePublicaciones() {
   const [publicaciones, setPublicaciones] = useState([]);
@@ -9,34 +10,62 @@ export default function usePublicaciones() {
   const load = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/publicaciones');
+      // Usar ruta pública sin autenticación para cargar datos
+      const baseURL = import.meta.env.VITE_API_URL.replace('/api', '');
+      const res = await axios.get(`${baseURL}/publicaciones`);
       setPublicaciones(res.data);
       setError(null);
     } catch (err) {
       setError(err);
+      console.error('Error cargando publicaciones:', err);
     } finally {
       setLoading(false);
     }
   };
 
   const create = async (data) => {
-    const res = await api.post('/api/publicaciones', data);
-    setPublicaciones((p) => [...p, res.data]);
+    try {
+      const res = await api.post('/publicaciones', data);
+      setPublicaciones((p) => [...p, res.data]);
+      return res.data;
+    } catch (err) {
+      console.error('Error creando publicación:', err);
+      throw err;
+    }
   };
 
   const update = async (id, data) => {
-    const res = await api.put(`/api/publicaciones/${id}`, data);
-    setPublicaciones((p) => p.map((it) => (it.id === id ? res.data : it)));
+    try {
+      const res = await api.put(`/publicaciones/${id}`, data);
+      setPublicaciones((p) => p.map((it) => (it.id === id ? res.data : it)));
+      return res.data;
+    } catch (err) {
+      console.error('Error actualizando publicación:', err);
+      throw err;
+    }
   };
 
   const remove = async (id) => {
-    await api.delete(`/api/publicaciones/${id}`);
-    setPublicaciones((p) => p.filter((it) => it.id !== id));
+    try {
+      await api.delete(`/publicaciones/${id}`);
+      setPublicaciones((p) => p.filter((it) => it.id !== id));
+    } catch (err) {
+      console.error('Error eliminando publicación:', err);
+      throw err;
+    }
   };
 
   useEffect(() => {
     load();
   }, []);
 
-  return { publicaciones, loading, error, load, create, update, remove };
+  return {
+    publicaciones,
+    loading,
+    error,
+    load,
+    create,
+    update,
+    remove,
+  };
 }
