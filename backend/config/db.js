@@ -6,7 +6,7 @@ const { Sequelize } = require('sequelize');
 const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: process.env.DB_FILE || './database.sqlite',
-  logging: false // opcional: elimina mensajes en consola
+  logging: process.env.NODE_ENV === 'development' ? console.log : false // opcional: elimina mensajes en consola
 });
 
 module.exports = sequelize;

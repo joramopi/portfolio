@@ -15,7 +15,8 @@ const register = async (req, res) => {
       return res.status(400).json({ message: 'El correo ya está registrado' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const rounds = parseInt(process.env.BCRYPT_ROUNDS, 10) || 10;
+    const hashedPassword = await bcrypt.hash(password, rounds);
 
     await User.create({
       name,
