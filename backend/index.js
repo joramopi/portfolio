@@ -3,7 +3,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const sequelize = require('./config/db'); // <-- nuevo import
+const sequelize = require('./config/db');
 require('./models/User');
 require('./models/Publicacion');
 const authRoutes = require('./routes/authRoutes');
@@ -17,9 +17,12 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173'
+};
 
 // Middlewares
-app.use(cors());
+app.use(cors(corsOptions));
 // Habilita lectura de JSON en los cuerpos de las peticiones
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
