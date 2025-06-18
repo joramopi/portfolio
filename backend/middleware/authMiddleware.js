@@ -39,7 +39,7 @@ const isAdminOrEditor = (req, res, next) => {
   if (req.userRole === 'admin' || req.userRole === 'editor') {
     next();
   } else {
-    return res.status(403).json({ message: 'Acceso denegado' });
+    return res.status(403).json({ message: 'Acceso solo para administradores o editores' });
   }
 };
 
