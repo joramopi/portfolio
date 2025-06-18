@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 const sequelize = require('./config/db'); // <-- nuevo import
 const authRoutes = require('./routes/authRoutes');
 const publicacionesRoutes = require('./routes/publicacionesRoutes');
+const errorHandler = require('./middleware/errorHandler');
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/api', publicacionesRoutes);
 app.use('/api', authRoutes);
+app.use(errorHandler);
 
 // Conectar DB y arrancar servidor
 sequelize.authenticate()

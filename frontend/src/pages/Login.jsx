@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -22,7 +23,8 @@ const Login = () => {
       navigate('/');
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      alert('Credenciales inválidas');
+      const msg = error.response?.data?.message || 'Credenciales inválidas';
+      setError(msg);
     }
   };
 
@@ -52,6 +54,7 @@ const Login = () => {
         >
           Iniciar sesión
         </button>
+        {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
       </form>
     </div>
   );

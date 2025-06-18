@@ -1,18 +1,24 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
 import FormularioPublicacion from '../components/FormularioPublicacion';
-import fakeData from '../data/publicaciones';
 
 export default function CMSPublicaciones() {
   const [publicaciones, setPublicaciones] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editPub, setEditPub] = useState(null);
 
+  const [error, setError] = useState('');
+
   const load = () => {
     api
       .get('/publicaciones')
-      .then((res) => setPublicaciones(res.data))
-      .catch(() => setPublicaciones(fakeData));
+      .then((res) => {
+        setPublicaciones(res.data);
+        setError('');
+      })
+      .catch(() => {
+        setError('No se pudieron cargar las publicaciones');
+      });
   };
 
   useEffect(() => {
@@ -41,7 +47,7 @@ export default function CMSPublicaciones() {
       setShowForm(false);
     } catch (err) {
       console.error(err);
-      alert('Error al guardar');
+      setError('Error al guardar publicación');
     }
   };
 
@@ -52,7 +58,7 @@ export default function CMSPublicaciones() {
       setPublicaciones((p) => p.filter((it) => it.id !== id));
     } catch (err) {
       console.error(err);
-      alert('Error al eliminar');
+      setError('Error al eliminar publicación');
     }
   };
 
@@ -83,6 +89,7 @@ export default function CMSPublicaciones() {
           </li>
         ))}
       </ul>
+      {error && <p className="text-red-600">{error}</p>}
       {showForm && (
         <FormularioPublicacion
           initialData={editPub || {}}

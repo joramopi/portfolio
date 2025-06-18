@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
 
@@ -27,12 +27,11 @@ const register = async (req, res) => {
 
     res.status(201).json({ message: 'Usuario registrado exitosamente' });
   } catch (error) {
-    console.error('Error en registro:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
+    next(error);
   }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -57,12 +56,11 @@ const login = async (req, res) => {
 
     res.status(200).json({ token });
   } catch (error) {
-    console.error('Error en login:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
+    next(error);
   }
 };
 
-const getMe = async (req, res) => {
+const getMe = async (req, res, next) => {
   try {
     const user = await User.findByPk(req.userId, {
       attributes: ['id', 'name', 'email', 'role']
@@ -74,8 +72,7 @@ const getMe = async (req, res) => {
 
     res.status(200).json(user);
   } catch (error) {
-    console.error('Error al obtener perfil:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
+    next(error);
   }
 };
 

@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const errorHandler = require('../middleware/errorHandler');
 
 const app = express();
 app.use(express.json());
@@ -16,7 +17,9 @@ app.get('/api', (req, res) => {
 });
 
 app.use('/api', require('../routes/authRoutes'));
+app.use('/api', require('../routes/publicacionesRoutes'));
 app.use('/api/sections', require('./routes/sections'));
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
