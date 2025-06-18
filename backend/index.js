@@ -6,6 +6,8 @@ const dotenv = require('dotenv');
 const sequelize = require('./config/db'); // <-- nuevo import
 const authRoutes = require('./routes/authRoutes');
 const publicacionesRoutes = require('./routes/publicacionesRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
+const path = require('path');
 
 dotenv.config();
 
@@ -14,8 +16,10 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use('/api', publicacionesRoutes);
 app.use('/api', authRoutes);
+app.use('/api', uploadRoutes);
 
 // Conectar DB y arrancar servidor
 sequelize.authenticate()
