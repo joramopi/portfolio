@@ -2,12 +2,17 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const User = require('../models/User');
+const { logger } = require('../middleware/logger');
 
 const register = async (req, res) => {
   try {
     // Verificar errores de validación
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      logger.warn('Intento de registro con datos inválidos', {
+        errors: errors.array(),
+        ip: req.ip
+      });
       return res.status(400).json({
         message: 'Datos inválidos',
         errors: errors.array()
@@ -19,6 +24,10 @@ const register = async (req, res) => {
     // Verificar si el usuario ya existe
     const existingUser = await User.findOne({ where: { email: email.toLowerCase() } });
     if (existingUser) {
+      logger.warn('Intento de registro con email existente', {
+        email: email.toLowerCase(),
+        ip: req.ip
+      });
       return res.status(400).json({ message: 'El correo ya está registrado' });
     }
 
@@ -34,7 +43,12 @@ const register = async (req, res) => {
       role: role || 'editor'
     });
 
-    // No devolver la contraseña
+    logger.info('Usuario registrado exitosamente', {
+      userId: newUser.id,
+      email: newUser.email,
+      role: newUser.role
+    });
+
     const userResponse = {
       id: newUser.id,
       name: newUser.name,
@@ -47,7 +61,11 @@ const register = async (req, res) => {
       user: userResponse
     });
   } catch (error) {
-    console.error('Error en registro:', error);
+    logger.error('Error en registro de usuario', {
+      error: error.message,
+      stack: error.stack,
+      ip: req.ip
+    });
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
@@ -57,6 +75,10 @@ const login = async (req, res) => {
     // Verificar errores de validación
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      logger.warn('Intento de login con datos inválidos', {
+        errors: errors.array(),
+        ip: req.ip
+      });
       return res.status(400).json({
         message: 'Datos inválidos',
         errors: errors.array()
@@ -68,12 +90,21 @@ const login = async (req, res) => {
     // Buscar usuario (case insensitive)
     const user = await User.findOne({ where: { email: email.toLowerCase() } });
     if (!user) {
+      logger.warn('Intento de login con email inexistente', {
+        email: email.toLowerCase(),
+        ip: req.ip
+      });
       return res.status(401).json({ message: 'Credenciales inválidas' });
     }
 
     // Verificar contraseña
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      logger.warn('Intento de login con contraseña incorrecta', {
+        email: email.toLowerCase(),
+        userId: user.id,
+        ip: req.ip
+      });
       return res.status(401).json({ message: 'Credenciales inválidas' });
     }
 
@@ -92,6 +123,13 @@ const login = async (req, res) => {
       }
     );
 
+    logger.info('Login exitoso', {
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      ip: req.ip
+    });
+
     // Respuesta exitosa
     res.status(200).json({
       token,
@@ -103,7 +141,11 @@ const login = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error en login:', error);
+    logger.error('Error en login', {
+      error: error.message,
+      stack: error.stack,
+      ip: req.ip
+    });
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
@@ -115,12 +157,20 @@ const getMe = async (req, res) => {
     });
 
     if (!user) {
+      logger.warn('Usuario no encontrado en getMe', {
+        userId: req.userId,
+        ip: req.ip
+      });
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
 
     res.status(200).json(user);
   } catch (error) {
-    console.error('Error al obtener perfil:', error);
+    logger.error('Error al obtener perfil de usuario', {
+      error: error.message,
+      userId: req.userId,
+      ip: req.ip
+    });
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
