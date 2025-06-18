@@ -2,19 +2,14 @@
 
 const jwt = require('jsonwebtoken');
 
-// Verifica que el token esté presente y válido
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
 
-  if (!authHeader) {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(403).json({ message: 'Token no proporcionado' });
   }
 
   const token = authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(403).json({ message: 'Token inválido' });
-  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -26,7 +21,6 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-// Verifica si el usuario es administrador
 const isAdmin = (req, res, next) => {
   if (req.userRole !== 'admin') {
     return res.status(403).json({ message: 'Acceso solo para administradores' });
@@ -34,7 +28,6 @@ const isAdmin = (req, res, next) => {
   next();
 };
 
-// Verifica si el usuario es editor
 const isEditor = (req, res, next) => {
   if (req.userRole !== 'editor') {
     return res.status(403).json({ message: 'Acceso solo para editores' });
@@ -42,7 +35,6 @@ const isEditor = (req, res, next) => {
   next();
 };
 
-// Verifica si el usuario es admin o editor
 const isAdminOrEditor = (req, res, next) => {
   if (req.userRole === 'admin' || req.userRole === 'editor') {
     next();

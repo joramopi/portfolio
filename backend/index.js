@@ -5,6 +5,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const sequelize = require('./config/db'); // <-- nuevo import
 const authRoutes = require('./routes/authRoutes');
+const publicacionesRoutes = require('./routes/publicacionesRoutes');
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+app.use('/api', publicacionesRoutes);
 app.use('/api', authRoutes);
 
 // Conectar DB y arrancar servidor
