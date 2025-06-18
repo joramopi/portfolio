@@ -1,0 +1,42 @@
+# Dockerfile.backend
+FROM node:18-alpine
+
+# Crear directorio de trabajo
+WORKDIR /app
+
+# Instalar dependencias del sistema
+RUN apk add --no-cache python3 make g++ sqlite
+
+# Copiar package files
+COPY package*.json ./
+
+# Instalar dependencias
+RUN npm ci --only=production
+
+# Copiar código fuente
+COPY . .
+
+# Crear directorios necesarios
+RUN mkdir -p logs public/uploads
+
+# Crear usuario no-root
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nodeuser -u 1001
+
+# Cambiar permisos
+RUN chown -R nodeuser:nodejs /app
+USER nodeuser
+
+# Exponer puerto
+EXPOSE 3000
+
+# Variables de entorno por defecto
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/publicaciones || exit 1
+
+# Comando de inicio
+CMD ["npm", "start"]

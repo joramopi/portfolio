@@ -3,23 +3,33 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const slowDown = require('express-slow-down');
+const path = require('path');
+
 const sequelize = require('./config/db');
+const { logger, requestLogger } = require('./middleware/logger');
+const errorHandler = require('./middleware/errorHandler');
+
+// Importar modelos
 require('./models/User');
 require('./models/Publicacion');
+
+// Importar rutas
 const authRoutes = require('./routes/authRoutes');
 const publicacionesRoutes = require('./routes/publicacionesRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const publicRoutes = require('./routes/publicRoutes');
-const path = require('path');
-const errorHandler = require('./middleware/errorHandler');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const slowDown = require('express-slow-down');
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Request logging middleware (antes que todo)
+app.use(requestLogger);
+
 // Middlewares de seguridad
 app.use(helmet({
   contentSecurityPolicy: {
@@ -71,7 +81,7 @@ app.use('/api', apiLimiter);
 app.use('/api', speedLimiter);
 
 // Middleware existente
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 // Rutas públicas (sin /api prefix)
 app.use('/', publicRoutes);
@@ -81,20 +91,44 @@ app.use('/api', authRoutes);
 app.use('/api', publicacionesRoutes);
 app.use('/api', uploadRoutes);
 
+// Error handler (debe ir al final)
 app.use(errorHandler);
 
 // Conectar DB y arrancar servidor
 sequelize.authenticate()
   .then(() => {
-    console.log('✅ Conectado a SQLite');
-    return sequelize.sync(); // sincroniza todos los modelos
+    logger.info('Conectado a SQLite exitosamente');
+    return sequelize.sync();
   })
   .then(() => {
-    console.log('📦 Modelos sincronizados');
+    logger.info('Modelos sincronizados con la base de datos');
     app.listen(PORT, () => {
-      console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+      logger.info(`Servidor corriendo en http://localhost:${PORT}`, {
+        port: PORT,
+        environment: process.env.NODE_ENV || 'development'
+      });
     });
   })
   .catch((err) => {
-    console.error('❌ Error al conectar a la base de datos:', err.message);
+    logger.error('Error al conectar a la base de datos', {
+      error: err.message,
+      stack: err.stack
+    });
+    process.exit(1);
   });
+
+// Manejo de errores no capturados
+process.on('uncaughtException', (err) => {
+  logger.error('Uncaught Exception', {
+    error: err.message,
+    stack: err.stack
+  });
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('Unhandled Rejection', {
+    reason: reason,
+    promise: promise
+  });
+});

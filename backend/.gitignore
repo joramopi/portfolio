@@ -1,0 +1,10 @@
+# Archivos de logs
+logs/*.log
+*.log
+
+# Otros archivos existentes...
+node_modules/
+.env
+database.sqlite
+public/uploads/*
+!public/uploads/.gitkeep

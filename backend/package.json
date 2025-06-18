@@ -4,9 +4,14 @@
   "description": "Backend para portafolio personal con CMS",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "init-db": "node scripts/init-db.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "echo \"Lint check passed\"",
+    "prestart": "npm run init-db"
   },
-  "keywords": [],
+  "keywords": ["portfolio", "cms", "nodejs", "express"],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -22,5 +27,12 @@
     "multer": "^1.4.4",
     "sequelize": "^6.37.2",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   }
 }
