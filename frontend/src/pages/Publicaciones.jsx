@@ -1,89 +1,72 @@
-// frontend/src/pages/CMSPublicaciones.jsx
-
-import React, { useEffect, useState } from 'react';
-import api from '../services/api';
+import { useState } from 'react';
 import FormularioPublicacion from '../components/FormularioPublicacion';
+import usePublicaciones from '../hooks/usePublicaciones';
+import { useAuth } from '../context/AuthContext';
 
-const CMSPublicaciones = () => {
-  const [publicaciones, setPublicaciones] = useState([]);
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [publicacionSeleccionada, setPublicacionSeleccionada] = useState(null);
+export default function Publicaciones() {
+  const { user } = useAuth();
+  const { publicaciones, create, update, remove } = usePublicaciones();
+  const [showForm, setShowForm] = useState(false);
+  const [editPub, setEditPub] = useState(null);
 
-  const cargarPublicaciones = async () => {
-    try {
-      const res = await api.get('/publicaciones');
-      setPublicaciones(res.data);
-    } catch (err) {
-      console.error('Error al cargar publicaciones:', err);
+  const canEdit = user && (user.role === 'admin' || user.role === 'editor');
+
+  const handleSave = async (data) => {
+    if (editPub) {
+      await update(editPub.id, data);
+    } else {
+      await create(data);
     }
-  };
-
-  useEffect(() => {
-    cargarPublicaciones();
-  }, []);
-
-  const handleEditar = (pub) => {
-    setPublicacionSeleccionada(pub); // ← se envía al formulario
-    setMostrarFormulario(true);
-  };
-
-  const handleEliminar = async (id) => {
-    if (!window.confirm('¿Eliminar esta publicación?')) return;
-    try {
-      await api.delete(`/publicaciones/${id}`);
-      cargarPublicaciones();
-    } catch (err) {
-      console.error('Error al eliminar:', err);
-    }
+    setShowForm(false);
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-xl font-bold mb-4">Gestión de Publicaciones</h1>
-
-      <button
-        onClick={() => {
-          setPublicacionSeleccionada(null);
-          setMostrarFormulario(true);
-        }}
-        className="mb-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-      >
-        Nueva publicación
-      </button>
-
-      {mostrarFormulario && (
-        <FormularioPublicacion
-          publicacion={publicacionSeleccionada}
-          onClose={() => setMostrarFormulario(false)}
-          onRefresh={cargarPublicaciones}
-        />
+    <section className="p-4 space-y-4">
+      <h1 className="text-2xl font-bold">Publicaciones</h1>
+      {canEdit && (
+        <button
+          onClick={() => {
+            setEditPub(null);
+            setShowForm(true);
+          }}
+          className="px-3 py-1 bg-blue-500 text-white rounded"
+        >
+          Nueva publicación
+        </button>
       )}
-
-      <ul className="space-y-2 mt-6">
+      <ul className="space-y-2">
         {publicaciones.map((pub) => (
-          <li key={pub.id} className="border p-4 rounded shadow-sm">
-            <h2 className="text-lg font-semibold">{pub.titulo}</h2>
-            <p>{pub.revista} — {pub.año}</p>
-            <p><a href={pub.doi} target="_blank" rel="noreferrer" className="text-blue-500 underline">{pub.doi}</a></p>
-            <div className="mt-2 flex space-x-2">
-              <button
-                onClick={() => handleEditar(pub)}
-                className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-              >
-                Editar
-              </button>
-              <button
-                onClick={() => handleEliminar(pub.id)}
-                className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-              >
-                Eliminar
-              </button>
-            </div>
+          <li key={pub.id} className="border p-2 flex justify-between items-center">
+            <span>{pub.titulo}</span>
+            {canEdit && (
+              <div className="space-x-2">
+                <button
+                  onClick={() => {
+                    setEditPub(pub);
+                    setShowForm(true);
+                  }}
+                  className="px-2 py-1 text-sm bg-yellow-500 text-white rounded"
+                >
+                  Editar
+                </button>
+                <button
+                  onClick={() => remove(pub.id)}
+                  className="px-2 py-1 text-sm bg-red-500 text-white rounded"
+                >
+                  Eliminar
+                </button>
+              </div>
+            )}
           </li>
         ))}
       </ul>
-    </div>
+      {showForm && canEdit && (
+        <FormularioPublicacion
+          initialData={editPub || {}}
+          onSave={handleSave}
+          onClose={() => setShowForm(false)}
+        />
+      )}
+    </section>
   );
-};
-
-export default CMSPublicaciones;
+}

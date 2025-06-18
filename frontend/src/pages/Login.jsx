@@ -1,24 +1,19 @@
 // frontend/src/pages/Login.jsx
 
 import React, { useState } from 'react';
-import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/login', { email, password });
-      const token = response.data.token;
-      // Guardar token en localStorage
-      localStorage.setItem('token', token);
-      // Establecer token en axios globalmente
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      // Redirigir al inicio o CMS
+      await login(email, password);
       navigate('/');
     } catch (error) {
       console.error('Error al iniciar sesión:', error);

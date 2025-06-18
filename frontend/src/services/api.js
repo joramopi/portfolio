@@ -4,9 +4,20 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-const token = localStorage.getItem('token');
-if (token) {
-  api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-}
+api.interceptors.request.use((config) => {
+  const t = localStorage.getItem('token');
+  if (t) {
+    config.headers['Authorization'] = `Bearer ${t}`;
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    console.error('API error:', err);
+    return Promise.reject(err);
+  }
+);
 
 export default api;

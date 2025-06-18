@@ -9,9 +9,8 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     if (token) {
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       api.get('/me')
-        .then(res => setUser(res.data))
+        .then((res) => setUser(res.data))
         .catch(() => logout());
     }
   }, [token]);
@@ -21,7 +20,6 @@ export function AuthProvider({ children }) {
     const t = res.data.token;
     localStorage.setItem('token', t);
     setToken(t);
-    api.defaults.headers.common['Authorization'] = `Bearer ${t}`;
     const me = await api.get('/me');
     setUser(me.data);
   };
@@ -30,7 +28,6 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('token');
     setToken(null);
     setUser(null);
-    delete api.defaults.headers.common['Authorization'];
   };
 
   return (

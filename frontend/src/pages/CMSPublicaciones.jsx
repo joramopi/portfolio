@@ -1,23 +1,11 @@
-import { useEffect, useState } from 'react';
-import api from '../services/api';
+import { useState } from 'react';
 import FormularioPublicacion from '../components/FormularioPublicacion';
-import fakeData from '../data/publicaciones';
+import usePublicaciones from '../hooks/usePublicaciones';
 
 export default function CMSPublicaciones() {
-  const [publicaciones, setPublicaciones] = useState([]);
+  const { publicaciones, create, update, remove } = usePublicaciones();
   const [showForm, setShowForm] = useState(false);
   const [editPub, setEditPub] = useState(null);
-
-  const load = () => {
-    api
-      .get('/publicaciones')
-      .then((res) => setPublicaciones(res.data))
-      .catch(() => setPublicaciones(fakeData));
-  };
-
-  useEffect(() => {
-    load();
-  }, []);
 
   const handleCreate = () => {
     setEditPub(null);
@@ -32,11 +20,9 @@ export default function CMSPublicaciones() {
   const handleSave = async (data) => {
     try {
       if (editPub) {
-        const res = await api.put(`/publicaciones/${editPub.id}`, data);
-        setPublicaciones((p) => p.map((it) => (it.id === editPub.id ? res.data : it)));
+        await update(editPub.id, data);
       } else {
-        const res = await api.post('/publicaciones', data);
-        setPublicaciones((p) => [...p, res.data]);
+        await create(data);
       }
       setShowForm(false);
     } catch (err) {
@@ -48,8 +34,7 @@ export default function CMSPublicaciones() {
   const handleDelete = async (id) => {
     if (!confirm('¿Eliminar publicación?')) return;
     try {
-      await api.delete(`/publicaciones/${id}`);
-      setPublicaciones((p) => p.filter((it) => it.id !== id));
+      await remove(id);
     } catch (err) {
       console.error(err);
       alert('Error al eliminar');

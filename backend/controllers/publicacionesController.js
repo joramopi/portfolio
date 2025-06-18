@@ -1,34 +1,6 @@
 // backend/controllers/publicacionesController.js
 
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
-
-// Modelo
-const Publicacion = sequelize.define('Publicacion', {
-  titulo: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  año: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  revista: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  doi: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  portada: {
-    type: DataTypes.STRING,
-    allowNull: true
-  }
-});
-
-// Sincronizar modelo
-Publicacion.sync();
+const Publicacion = require('../models/Publicacion');
 
 // Controladores CRUD
 const getPublicaciones = async (req, res) => {
