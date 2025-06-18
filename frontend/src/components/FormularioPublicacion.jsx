@@ -11,6 +11,7 @@ const FormularioPublicacion = ({ publicacion, onClose, onRefresh }) => {
     doi: '',
     portada: ''
   });
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     if (publicacion) {
@@ -21,6 +22,7 @@ const FormularioPublicacion = ({ publicacion, onClose, onRefresh }) => {
         doi: publicacion.doi || '',
         portada: publicacion.portada || ''
       });
+      setFile(null);
     }
   }, [publicacion]);
 
@@ -29,13 +31,27 @@ const FormularioPublicacion = ({ publicacion, onClose, onRefresh }) => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      let data = { ...form };
+      if (file) {
+        const fd = new FormData();
+        fd.append('image', file);
+        const res = await api.post('/upload', fd, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        data.portada = res.data.url;
+      }
+
       if (publicacion?.id) {
-        await api.put(`/publicaciones/${publicacion.id}`, form);
+        await api.put(`/publicaciones/${publicacion.id}`, data);
       } else {
-        await api.post('/publicaciones', form);
+        await api.post('/publicaciones', data);
       }
       onRefresh();
       onClose();
@@ -79,6 +95,11 @@ const FormularioPublicacion = ({ publicacion, onClose, onRefresh }) => {
         onChange={handleChange}
         className="w-full border px-3 py-2 rounded"
         required
+      />
+      <input
+        type="file"
+        onChange={handleFileChange}
+        className="w-full border px-3 py-2 rounded"
       />
       <input
         name="portada"
