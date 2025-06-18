@@ -3,7 +3,7 @@ import FormularioPublicacion from '../components/FormularioPublicacion';
 import usePublicaciones from '../hooks/usePublicaciones';
 
 export default function CMSPublicaciones() {
-  const { publicaciones, create, update, remove } = usePublicaciones();
+  const { publicaciones, load, remove } = usePublicaciones();
   const [showForm, setShowForm] = useState(false);
   const [editPub, setEditPub] = useState(null);
 
@@ -17,19 +17,6 @@ export default function CMSPublicaciones() {
     setShowForm(true);
   };
 
-  const handleSave = async (data) => {
-    try {
-      if (editPub) {
-        await update(editPub.id, data);
-      } else {
-        await create(data);
-      }
-      setShowForm(false);
-    } catch (err) {
-      console.error(err);
-      alert('Error al guardar');
-    }
-  };
 
   const handleDelete = async (id) => {
     if (!confirm('¿Eliminar publicación?')) return;
@@ -70,9 +57,13 @@ export default function CMSPublicaciones() {
       </ul>
       {showForm && (
         <FormularioPublicacion
-          initialData={editPub || {}}
-          onSave={handleSave}
-          onClose={() => setShowForm(false)}
+          publicacion={editPub}
+          isEditing={!!editPub}
+          onClose={() => {
+            setShowForm(false);
+            setEditPub(null);
+          }}
+          onRefresh={load}
         />
       )}
     </section>
