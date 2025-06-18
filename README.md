@@ -83,3 +83,19 @@ npm run dev
 Vite iniciará la aplicación y la servirá normalmente en `http://localhost:5173`.
 
 ---
+
+## Despliegue con Docker Compose
+
+Para ejecutar la aplicación con Docker en modo desarrollo utiliza:
+
+```bash
+docker-compose up -d
+```
+
+Para un despliegue de producción se incluye `docker-compose.prod.yml` y el script `scripts/deploy.sh`:
+
+```bash
+JWT_SECRET=tu_secreto ./scripts/deploy.sh
+```
+
+Esto construirá las imágenes, levantará los contenedores y verificará su estado.

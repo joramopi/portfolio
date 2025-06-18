@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.backend
+    container_name: portfolio-backend-prod
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - JWT_SECRET=${JWT_SECRET}
+      - DB_FILE=/app/data/database.sqlite
+      - FRONTEND_URL=${FRONTEND_URL}
+      - BCRYPT_ROUNDS=12
+    volumes:
+      - /var/portfolio/data:/app/data
+      - /var/portfolio/logs:/app/logs
+      - /var/portfolio/uploads:/app/public/uploads
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    container_name: portfolio-frontend-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - VITE_API_URL=${BACKEND_URL}/api
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - backend
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
