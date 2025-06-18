@@ -1,5 +1,3 @@
-// backend/controllers/authController.js
-
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
@@ -8,17 +6,18 @@ const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // Verifica si ya existe el correo
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Todos los campos son obligatorios' });
+    }
+
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: 'El correo ya está registrado' });
     }
 
-    // Encripta la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Crea el usuario
-    const newUser = await User.create({
+    await User.create({
       name,
       email,
       password: hashedPassword,
@@ -36,19 +35,20 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Busca el usuario
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Correo y contraseña son requeridos' });
+    }
+
     const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
 
-    // Compara contraseñas
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: 'Contraseña incorrecta' });
     }
 
-    // Genera token
     const token = jwt.sign(
       { id: user.id, role: user.role },
       process.env.JWT_SECRET,
@@ -79,8 +79,4 @@ const getMe = async (req, res) => {
   }
 };
 
-module.exports = {
-  register,
-  login,
-  getMe
-};
+module.exports = { register, login, getMe };
