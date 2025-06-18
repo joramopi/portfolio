@@ -7,10 +7,10 @@ const { verifyToken, isAdminOrEditor } = require('../middleware/authMiddleware')
 const { getPublicaciones, crearPublicacion, actualizarPublicacion, eliminarPublicacion } = require('../controllers/publicacionesController');
 
 const validatePublicacion = [
-  body('titulo').notEmpty(),
-  body('año').isInt(),
-  body('revista').notEmpty(),
-  body('doi').notEmpty(),
+  body('titulo').notEmpty().trim().escape(),
+  body('año').isInt({ min: 1900, max: new Date().getFullYear() + 1 }),
+  body('revista').notEmpty().trim().escape(),
+  body('doi').notEmpty().trim(),
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

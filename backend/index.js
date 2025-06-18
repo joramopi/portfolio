@@ -73,9 +73,12 @@ app.use('/api', speedLimiter);
 // Middleware existente
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+// Rutas públicas (sin /api prefix)
 app.use('/', publicRoutes);
-app.use('/api', publicacionesRoutes);
+
+// Rutas protegidas (con /api prefix)
 app.use('/api', authRoutes);
+app.use('/api', publicacionesRoutes);
 app.use('/api', uploadRoutes);
 
 app.use(errorHandler);
