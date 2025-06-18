@@ -5,20 +5,12 @@ import { useAuth } from '../context/AuthContext';
 
 export default function Publicaciones() {
   const { user } = useAuth();
-  const { publicaciones, create, update, remove } = usePublicaciones();
+  const { publicaciones, load, remove } = usePublicaciones();
   const [showForm, setShowForm] = useState(false);
   const [editPub, setEditPub] = useState(null);
 
   const canEdit = user && (user.role === 'admin' || user.role === 'editor');
 
-  const handleSave = async (data) => {
-    if (editPub) {
-      await update(editPub.id, data);
-    } else {
-      await create(data);
-    }
-    setShowForm(false);
-  };
 
   return (
     <section className="p-4 space-y-4">
@@ -62,9 +54,13 @@ export default function Publicaciones() {
       </ul>
       {showForm && canEdit && (
         <FormularioPublicacion
-          initialData={editPub || {}}
-          onSave={handleSave}
-          onClose={() => setShowForm(false)}
+          publicacion={editPub}
+          isEditing={!!editPub}
+          onClose={() => {
+            setShowForm(false);
+            setEditPub(null);
+          }}
+          onRefresh={load}
         />
       )}
     </section>
