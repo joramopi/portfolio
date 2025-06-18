@@ -18,7 +18,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Middlewares
 app.use(cors());
+// Habilita lectura de JSON en los cuerpos de las peticiones
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use('/', publicRoutes);
