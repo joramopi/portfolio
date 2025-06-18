@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const { Op } = require('sequelize');
 const Publicacion = require('../models/Publicacion');
+const { logger } = require('../middleware/logger');
 
 // Obtener todas las publicaciones
 const getPublicaciones = async (req, res) => {
@@ -32,7 +33,11 @@ const getPublicaciones = async (req, res) => {
       totalPages: Math.ceil(count / limit)
     });
   } catch (err) {
-    console.error('Error al obtener publicaciones:', err);
+    logger.error('Error al obtener publicaciones', {
+      error: err.message,
+      stack: err.stack,
+      ip: req.ip
+    });
     res.status(500).json({ message: 'Error al obtener publicaciones' });
   }
 };
@@ -72,7 +77,11 @@ const crearPublicacion = async (req, res) => {
       publicacion: nueva
     });
   } catch (err) {
-    console.error('Error al crear publicación:', err);
+    logger.error('Error al crear publicación', {
+      error: err.message,
+      stack: err.stack,
+      ip: req.ip
+    });
     res.status(500).json({ message: 'Error al crear publicación' });
   }
 };
@@ -127,7 +136,11 @@ const actualizarPublicacion = async (req, res) => {
       publicacion
     });
   } catch (err) {
-    console.error('Error al actualizar publicación:', err);
+    logger.error('Error al actualizar publicación', {
+      error: err.message,
+      stack: err.stack,
+      ip: req.ip
+    });
     res.status(500).json({ message: 'Error al actualizar publicación' });
   }
 };
@@ -146,7 +159,11 @@ const eliminarPublicacion = async (req, res) => {
 
     res.json({ message: 'Publicación eliminada exitosamente' });
   } catch (err) {
-    console.error('Error al eliminar publicación:', err);
+    logger.error('Error al eliminar publicación', {
+      error: err.message,
+      stack: err.stack,
+      ip: req.ip
+    });
     res.status(500).json({ message: 'Error al eliminar publicación' });
   }
 };
