@@ -25,6 +25,7 @@ const publicRoutes = require('./routes/publicRoutes');
 dotenv.config();
 
 const app = express();
+app.disable('x-powered-by');
 const PORT = process.env.PORT || 3000;
 
 // Request logging middleware (antes que todo)
@@ -35,7 +36,7 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'"] ,
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", 'data:', 'https:'],
     },
