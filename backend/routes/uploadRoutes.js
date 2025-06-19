@@ -16,7 +16,20 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (req, file, cb) => {
+    const allowed = /jpeg|jpg|png|gif/;
+    const ext = path.extname(file.originalname).toLowerCase();
+    const mime = file.mimetype;
+    if (allowed.test(ext) && allowed.test(mime)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Formato de archivo no permitido'));
+    }
+  }
+});
 
 router.post('/upload', verifyToken, isAdminOrEditor, upload.single('image'), (req, res) => {
   const filePath = `/uploads/${req.file.filename}`;
