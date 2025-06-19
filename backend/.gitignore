@@ -8,3 +8,7 @@ node_modules/
 database.sqlite
 public/uploads/*
 !public/uploads/.gitkeep
+
+# Build output
+dist/
+
