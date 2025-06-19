@@ -13,7 +13,7 @@ export default function usePublicaciones() {
       // Usar ruta pública sin autenticación para cargar datos
       const baseURL = import.meta.env.VITE_API_URL.replace('/api', '');
       const res = await axios.get(`${baseURL}/publicaciones`);
-      setPublicaciones(res.data);
+      setPublicaciones(res.data.publicaciones);
       setError(null);
     } catch (err) {
       setError(err);
@@ -26,8 +26,8 @@ export default function usePublicaciones() {
   const create = async (data) => {
     try {
       const res = await api.post('/publicaciones', data);
-      setPublicaciones((p) => [...p, res.data]);
-      return res.data;
+      setPublicaciones((p) => [...p, res.data.publicacion]);
+      return res.data.publicacion;
     } catch (err) {
       console.error('Error creando publicación:', err);
       throw err;
@@ -37,8 +37,10 @@ export default function usePublicaciones() {
   const update = async (id, data) => {
     try {
       const res = await api.put(`/publicaciones/${id}`, data);
-      setPublicaciones((p) => p.map((it) => (it.id === id ? res.data : it)));
-      return res.data;
+      setPublicaciones((p) =>
+        p.map((it) => (it.id === id ? res.data.publicacion : it))
+      );
+      return res.data.publicacion;
     } catch (err) {
       console.error('Error actualizando publicación:', err);
       throw err;
